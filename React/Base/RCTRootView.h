@@ -12,6 +12,8 @@
 extern NSString *const RCTTVEnableMenuKeyNotification;
 extern NSString *const RCTTVDisableMenuKeyNotification;
 
+extern NSString *const RCTReinitializeTVRemoteNotification;
+
 
 @protocol RCTRootViewDelegate;
 
