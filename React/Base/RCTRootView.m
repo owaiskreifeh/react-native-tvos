@@ -38,6 +38,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 NSString *const RCTTVEnableMenuKeyNotification = @"RCTTVEnableMenuKeyNotification";
 NSString *const RCTTVDisableMenuKeyNotification = @"RCTTVDisableMenuKeyNotification";
 
+NSString *const RCTReinitializeTVRemoteNotification = @"RCTReinitializeTVRemoteNotification";
+
 
 @interface RCTUIManager (RCTRootView)
 
@@ -104,6 +106,11 @@ NSString *const RCTTVDisableMenuKeyNotification = @"RCTTVDisableMenuKeyNotificat
                                                    name:RCTTVDisableMenuKeyNotification
                                                  object:nil];
       
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reinitializeTVRemote:)
+                                                 name:RCTReinitializeTVRemoteNotification
+                                               object:nil];
+      
     self.tvRemoteHandler = [RCTTVRemoteHandler new];
     for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
       [self addGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
@@ -139,6 +146,21 @@ NSString *const RCTTVDisableMenuKeyNotification = @"RCTTVDisableMenuKeyNotificat
             [self removeGestureRecognizer:self.tvRemoteHandler.tvMenuKeyRecognizer];
         }
     });
+}
+
+-(void) reinitializeTVRemote:(NSNotification*)notification
+{
+    NSDictionary* userInfo = notification.userInfo;
+    NSNumber* withGesture = (NSNumber*)userInfo[@"withGesture"];
+    if ([withGesture intValue] == 0) {
+        for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
+            [self removeGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
+        }
+    } else {
+        for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
+          [self addGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
+        }
+    }
 }
 
 #endif
