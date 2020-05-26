@@ -115,7 +115,7 @@ NSString *const RCTReinitializeTVRemoteNotification = @"RCTReinitializeTVRemoteN
     for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
       [self addGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
     }
-    // [self addGestureRecognizer:self.tvRemoteHandler.tvMenuKeyRecognizer];
+    [self addGestureRecognizer:self.tvRemoteHandler.tvMenuKeyRecognizer];
 #endif
 
     [self showLoadingView];
