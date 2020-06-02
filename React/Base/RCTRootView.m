@@ -111,11 +111,11 @@ NSString *const RCTReinitializeTVRemoteNotification = @"RCTReinitializeTVRemoteN
                                                  name:RCTReinitializeTVRemoteNotification
                                                object:nil];
       
-    self.tvRemoteHandler = [RCTTVRemoteHandler new];
-    for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
-      [self addGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
-    }
-    [self addGestureRecognizer:self.tvRemoteHandler.tvMenuKeyRecognizer];
+    // self.tvRemoteHandler = [RCTTVRemoteHandler new];
+    // for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
+    //   [self addGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
+    // }
+    // [self addGestureRecognizer:self.tvRemoteHandler.tvMenuKeyRecognizer];
 #endif
 
     [self showLoadingView];
