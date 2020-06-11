@@ -44,12 +44,20 @@ NSString *const RCTTVRemoteEventSwipeDown = @"swipeDown";
 
 @implementation RCTTVRemoteHandler {
   NSMutableDictionary<NSString *, UIGestureRecognizer *> *_tvRemoteGestureRecognizers;
+    int _panXSteps;
+    int _panYSteps;
+    CGFloat _panXFactor;
+    CGFloat _panYFactor;
 }
 
 - (instancetype)init
 {
   if ((self = [super init])) {
     _tvRemoteGestureRecognizers = [NSMutableDictionary dictionary];
+      _panXSteps = 0;
+      _panYSteps = 0;
+      _panXFactor = 0.2;
+      _panYFactor = 0.2;
 
     // Recognizers for Apple TV remote buttons
     // Menu recognizer
@@ -118,6 +126,9 @@ NSString *const RCTTVRemoteEventSwipeDown = @"swipeDown";
     [self addSwipeGestureRecognizerWithSelector:@selector(swipedRight:)
                                       direction:UISwipeGestureRecognizerDirectionRight
                                            name:RCTTVRemoteEventSwipeRight];
+      
+      [self addPanGestureRecognizerWithSelector:@selector(pan:)
+                                           name:@"pan"];
 
   }
 
@@ -137,6 +148,7 @@ NSString *const RCTTVRemoteEventSwipeDown = @"swipeDown";
 - (void)selectPressed:(UIGestureRecognizer *)r
 {
   [self sendAppleTVEvent:RCTTVRemoteEventSelect toView:r.view];
+    NSLog(@"Saffar selectPressed");
 }
 
 - (void)longPlayPausePressed:(UIGestureRecognizer *)r
@@ -194,6 +206,36 @@ NSString *const RCTTVRemoteEventSwipeDown = @"swipeDown";
   [self sendAppleTVEvent:RCTTVRemoteEventRight toView:r.view];
 }
 
+- (void)pan:(UIPanGestureRecognizer *)r
+{
+    if (r.state == UIGestureRecognizerStateChanged) {
+        CGPoint translatedPoint = [r translationInView:r.view];
+        CGSize padSize = r.view.bounds.size;
+        int xSteps = translatedPoint.x / (padSize.width * _panXFactor);
+        int ySteps = translatedPoint.y / (padSize.height * _panYFactor);
+        
+//        NSLog(@"Saffar values = %f , %f", translatedPoint.x / (padSize.width * _panXFactor) , translatedPoint.y / (padSize.height * _panYFactor));
+//        NSLog(@"Saffar floor = %d , %d", xSteps , ySteps);
+        
+        if (xSteps > _panXSteps) {
+            [self swipedRight:r];
+            _panXSteps = xSteps;
+        } else if (xSteps < _panXSteps){
+            [self swipedLeft:r];
+            _panXSteps = xSteps;
+        } else if (ySteps < _panYSteps){
+           [self swipedUp:r];
+            _panYSteps = ySteps;
+        } else if (ySteps > _panYSteps){
+           [self swipedDown:r];
+            _panYSteps = ySteps;
+        }
+    } else if (r.state == UIGestureRecognizerStateBegan) {
+        _panXSteps = 0;
+        _panYSteps = 0;
+    }
+}
+
 #pragma mark -
 
 - (void)addLongPressGestureRecognizerWithSelector:(nonnull SEL)selector pressType:(UIPressType)pressType name:(NSString *)name
@@ -220,10 +262,26 @@ NSString *const RCTTVRemoteEventSwipeDown = @"swipeDown";
   _tvRemoteGestureRecognizers[name] = recognizer;
 }
 
+- (void)addPanGestureRecognizerWithSelector:(nonnull SEL)selector name:(NSString *)name
+{
+  UIPanGestureRecognizer *recognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:selector];
+  _tvRemoteGestureRecognizers[name] = recognizer;
+}
+
 - (void)sendAppleTVEvent:(NSString *)eventType toView:(__unused UIView *)v
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
                                                       object:@{@"eventType":eventType}];
+}
+
+- (void) setPanStepFactor:(CGFloat)x yFactor:(CGFloat)y
+{
+    _panXFactor = x;
+    _panYFactor = y;
+    _panXSteps = 0;
+    _panYSteps = 0;
+    
+//    NSLog(@"Saffar setPanStepFactor = %f , %f", x , y);
 }
 
 

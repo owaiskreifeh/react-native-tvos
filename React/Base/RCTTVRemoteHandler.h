@@ -30,4 +30,6 @@ extern NSString *const RCTTVRemoteEventSwipeDown;
 @property (nonatomic, copy, readonly) NSDictionary *tvRemoteGestureRecognizers;
 @property (nonatomic, strong) UITapGestureRecognizer *tvMenuKeyRecognizer;
 
+- (void) setPanStepFactor:(CGFloat)x yFactor:(CGFloat)y;
+
 @end
